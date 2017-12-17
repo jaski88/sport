@@ -22,6 +22,14 @@ AppAsset::register($this);
     <?= Html::csrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+                <style>
+                    /* Always set the map height explicitly to define the size of the div
+                     * element that contains the map. */
+                    #map {
+                        height: 400px;
+                    }
+
+                </style>
 </head>
 <body>
 <?php $this->beginBody() ?>
@@ -80,6 +88,10 @@ AppAsset::register($this);
 </footer>
 
 <?php $this->endBody() ?>
+
+<script src="/sport/web/scripts.js"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARPEUMKytC0BP1VEQjtxGgn7UdIT5CykM&callback=initMap"></script>
+
 </body>
 </html>
 <?php $this->endPage() ?>

@@ -1,8 +1,8 @@
 <?php
 
 namespace app\models;
-use Yii;
 
+use Yii;
 
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 
@@ -32,7 +32,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 
     public function login() {
         if ($this->validate()) {
-            return Yii::$app->user->login(self::findByUsername($this->username), 3600 * 24 * 30 );
+            return Yii::$app->user->login(self::findByUsername($this->username), 3600 * 24 * 30);
         }
         return false;
     }
@@ -55,6 +55,11 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 
     public $authKey;
     public $passwordConfirm;
+    
+    public static function  getUserId()
+    {
+        return Yii::$app->user->identity->id;
+    }
 
     /**
      * @inheritdoc
@@ -118,6 +123,13 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
                 $this->addError($attribute, 'Passwords must be the same');
             }
         }
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEvents() {
+        return $this->hasMany(Event::className(), ['user_id' => 'id']);
     }
 
 }

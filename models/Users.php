@@ -12,21 +12,19 @@ use Yii;
  * @property string $password
  * @property integer $admin
  */
-class Users extends \yii\db\ActiveRecord
-{
+class Users extends \yii\db\ActiveRecord {
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'users';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['id', 'email', 'password', 'role'], 'required'],
             [['id', 'role'], 'integer'],
@@ -37,8 +35,7 @@ class Users extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'username' => 'Email',
@@ -46,4 +43,12 @@ class Users extends \yii\db\ActiveRecord
             'role' => 'Admin',
         ];
     }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEvents() {
+        return $this->hasMany(Event::className(), ['user_id' => 'id']);
+    }
+
 }

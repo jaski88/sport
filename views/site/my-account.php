@@ -31,8 +31,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'username',
 //            'password',
-//            'role',
+            'role',
         ],
     ]) ?>
+    
+    <?php foreach(   $model->events as $event ) : ?>
+        <?php echo $event->location; ?>
+    <?php endforeach; ?>
+    
+    <?php var_dump( $model->events ); ?>
 
 </div>
