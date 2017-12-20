@@ -81,8 +81,12 @@ class EventSearch extends Event
             'event_type' => $this->event_type,
             'people_min' => $this->people_min,
             'people_max' => $this->people_max,
-            'region_id' => $this->region_id,
         ]);
+        
+        if ( $this->region_id != 0 )
+        {
+            $query->andFilterWhere([ 'region_id' => $this->region_id ]);
+        }
 
         $query->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'location', $this->location])

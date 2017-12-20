@@ -56,26 +56,5 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <script>
-
-    function initMap( )
-    {
-
-        var myLatLng = {lat: <?= $model->getLat() ?>, lng: <?= $model->getLng() ?>};
-
-        var geocoder = new google.maps.Geocoder;
-
-        var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 10,
-            center: myLatLng
-        });
-
-        var marker = new google.maps.Marker({
-            position: myLatLng,
-            map: map,
-            title: ''
-        });
-    }
-
-    google.maps.event.addDomListener(window, 'load', initMap);
-
+    var markers = [ <?= $model->toMarkerJson() ?> ];
 </script>

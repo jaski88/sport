@@ -43,7 +43,7 @@ class Region extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'name' => 'Region',
             'slug' => 'Slug',
             'active' => 'Active',
         ];

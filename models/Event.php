@@ -42,7 +42,7 @@ class Event extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['user_id', 'public', 'time_start', 'duration', 'active', 'description', 'location', 'event_type', 'people_min', 'people_max','region_id'], 'required'],
+            [['user_id', 'public', 'time_start', 'duration', 'active', 'description', 'location', 'event_type', 'people_min', 'people_max', 'region_id'], 'required'],
             [['user_id', 'public', 'cyclic', 'active', 'event_type', 'people_min', 'people_max'], 'integer'],
             [['time_start', 'time_end'], 'safe'],
             [['description', 'location'], 'string'],
@@ -61,7 +61,7 @@ class Event extends \yii\db\ActiveRecord {
             'id' => 'ID',
             'user_id' => 'User ID',
             'public' => 'Public',
-            'time_start' => 'Time Start',
+            'time_start' => 'Rozpoczęcie',
             'time_end' => 'Time End',
             'cyclic' => 'Cyclic',
             'active' => 'Active',
@@ -70,8 +70,9 @@ class Event extends \yii\db\ActiveRecord {
             'event_type' => 'Event Type',
             'people_min' => 'People Min',
             'people_max' => 'People Max',
-            'town' => 'Town',
-            'duration' => 'Czas trwania'
+            'town' => 'Adres',
+            'duration' => 'Czas trwania',
+            'region_id' => 'Region'
         ];
     }
 
@@ -115,6 +116,30 @@ class Event extends \yii\db\ActiveRecord {
      */
     public function getRegion() {
         return $this->hasOne(Region::className(), ['id' => 'region_id']);
+    }
+
+    public function loadDefault() {       
+        $this->location = "52.234660180064594;21.00889634393309";
+        $this->town = "Marszałkowska 132, 00-008 Warszawa, Poland";
+        $this->region_id = 6;
+        $this->time_start = date('Y-m-d H:i');
+        $this->public = 1;
+        $this->duration = 1;
+        $this->active = 1;
+        $this->people_min = 0;
+        $this->people_max = 0;
+    }
+    
+    public function toClassName()
+    {
+        $class= [ 1 => "panel-primary", 2=> "panel-success", 3=>"panel-info", 4=>"panel-warning", 5 => "panel-danger" ];
+        return $class[$this->event_type];
+    
+    }
+    
+    public function toMarkerJson( )
+    {
+        return sprintf('{ coords: {lat: %s, lng: %s }, title:\'\' }', $this->getLat(), $this->getLng( ) ); 
     }
 
 }

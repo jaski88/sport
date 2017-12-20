@@ -8,6 +8,8 @@ $types = ArrayHelper::map(\app\models\EventType::find()->all(), 'id', 'name');
 
 $regions = ArrayHelper::map(\app\models\Region::find()->all(), 'id', 'name');
 
+$regions = array_merge(array( 0 => '' ), $regions);
+
 /* @var $this yii\web\View */
 /* @var $model app\models\EventSearch */
 /* @var $form yii\widgets\ActiveForm */

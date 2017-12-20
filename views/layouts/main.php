@@ -30,10 +30,14 @@ AppAsset::register($this);
                     }
 
                 </style>
+                <script>
+                    var route = { controller: '<?= Yii::$app->controller->id ?>', 
+                                  action: '<?= Yii::$app->controller->action->id ?>', 
+                                  full: '<?= Yii::$app->controller->id ?>/<?= Yii::$app->controller->action->id ?>' };
+                </script>
 </head>
 <body>
 <?php $this->beginBody() ?>
-
 <div class="wrap">
     <?php
     NavBar::begin([

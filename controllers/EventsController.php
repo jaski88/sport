@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Event;
-use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -40,16 +39,7 @@ class EventsController extends Controller {
         return $this->render('index', [
                     'dataProvider' => $dataProvider,
                     'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
         ]);
-        //        $dataProvider = new ActiveDataProvider([
-//                        'query' => Event::getIncoming(),
-//
-//        ]);
-//
-//        return $this->render('index', [
-//                    'dataProvider' => $dataProvider,
-//        ]);
     }
 
     /**
@@ -73,20 +63,12 @@ class EventsController extends Controller {
         $model->user_id = \app\models\User::getUserId();
 
         if ($model->load(Yii::$app->request->post())) {
-
             $result = $model->save();
-
             if ($result === true) {
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         } else {
-
-            $model->time_start = date('Y-m-d H:i');
-            $model->time_end = date('Y-m-d H:i');
-            $model->public = 1;
-            $model->active = 1;
-            $model->people_min = 0;
-            $model->people_max = 0;
+            $model->loadDefault();
         }
 
         return $this->render('create', [
