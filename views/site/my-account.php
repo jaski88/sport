@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\grid\GridView; 
 
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
@@ -16,16 +17,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?=
+        Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ])
+        ?>
     </p>
 
-    <?= DetailView::widget([
+    <?=
+    DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
@@ -33,12 +37,12 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'password',
             'role',
         ],
-    ]) ?>
-    
-    <?php foreach(   $model->events as $event ) : ?>
-        <?php echo $event->location; ?>
-    <?php endforeach; ?>
-    
-    <?php var_dump( $model->events ); ?>
+    ])
+    ?>
+
+<?php foreach ($model->events as $event) : ?>
+            <?php echo $event->location; ?>
+        <?php endforeach; ?>
+
 
 </div>

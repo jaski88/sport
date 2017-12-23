@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\EventSearch;
+use app\models\User;
 
 /**
  * EventsController implements the CRUD actions for Event model.
@@ -41,6 +42,18 @@ class EventsController extends Controller {
                     'searchModel' => $searchModel,
         ]);
     }
+    
+    public function actionUser()
+    {
+        $searchModel = new EventSearch();
+        $dataProvider = $searchModel->search_by_user(Yii::$app->request->queryParams, User::getUserId());
+                
+        return $this->render('user', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
 
     /**
      * Displays a single Event model.

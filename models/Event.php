@@ -1,7 +1,7 @@
 <?php
 
 namespace app\models;
-
+use yii\helpers\Html;
 use Yii;
 
 /**
@@ -110,6 +110,13 @@ class Event extends \yii\db\ActiveRecord {
         $date = date('Y-m-d H:i');
         return Event::find()->where(['active' => Event::STATUS_ACTIVE, 'public' => Event::STATUS_PUBLIC]); //->andWhere(['>', 'time_start', $date]);
     }
+    
+        static function findByUser( $user_id ) {
+        $date = date('Y-m-d H:i');
+        return Event::find()->where(['user_id' => $user_id]); //->andWhere(['>', 'time_start', $date]);
+    }
+    
+    
 
     /**
      * @return \yii\db\ActiveQuery
@@ -137,9 +144,15 @@ class Event extends \yii\db\ActiveRecord {
     
     }
     
+    public function getUrl()
+    {
+        return Html::a('Wiecej', ['events/view', 'id' => $this->id]);
+    }
+    
     public function toMarkerJson( )
     {
-        return sprintf('{ coords: {lat: %s, lng: %s }, title:\'\' }', $this->getLat(), $this->getLng( ) ); 
+        $content = $this->time_start. ' <br />'. $this->town . '<br />'. $this->getUrl();
+        return sprintf('{id:%s, coords: {lat: %s, lng: %s }, title:\'\', content:\'%s\' }', !empty( $this->id ) ? $this->id : -1, $this->getLat(), $this->getLng( ), $content ); 
     }
 
 }

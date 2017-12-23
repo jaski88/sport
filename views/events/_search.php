@@ -33,15 +33,15 @@ $regions = array_merge(array( 0 => '' ), $regions);
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <?= $form->field($model, 'event_type')->checkboxList($types) ?>
+        </div>
+        <div class="col-lg-6">
+            <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
+            <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
         </div>
     </div>
 
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
-    </div>
 
 <?php ActiveForm::end(); ?>
 

@@ -58,6 +58,9 @@ class EventSearch extends Event
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+                'pagination' => [
+                'pageSize' => 5,
+            ],
         ]);
 
         $this->load($params);
@@ -102,4 +105,46 @@ class EventSearch extends Event
         
         return $dataProvider;
     }
+    
+    public function search_by_user($params, $user_id)
+    {
+        $query = Event::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'user_id' => $user_id,
+            'public' => $this->public,
+            'time_start' => $this->time_start,
+            'duration' => $this->duration,
+            'time_end' => $this->time_end,
+            'cyclic' => $this->cyclic,
+            'active' => $this->active,
+            'event_type' => $this->event_type,
+            'people_min' => $this->people_min,
+            'people_max' => $this->people_max,
+            'region_id' => $this->region_id,
+        ]);
+
+        $query->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'location', $this->location])
+            ->andFilterWhere(['like', 'town', $this->town]);
+
+        return $dataProvider;
+    }
+    
 }
