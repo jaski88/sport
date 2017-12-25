@@ -131,5 +131,16 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     public function getEvents() {
         return $this->hasMany(Event::className(), ['user_id' => 'id']);
     }
+    
+    public function getEventUsers()
+    {
+        return $this->hasMany(EventUsers::className(), ['user_id' => 'id']);
+    }
+    
+    public static function hasSigned( $eventId )
+    {
+        return null !=  EventUsers::findOne(['user_id' => User::getUserId(), 'event_id' => $eventId]);
+    }
+
 
 }

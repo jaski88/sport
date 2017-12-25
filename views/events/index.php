@@ -26,9 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
         
 <?php if (count($events)): ?>
         <div class="col-lg-4">
+            <div class="list-group">
                 <?php foreach ($events as $event): ?>
                     <?= $this->render('event', ['event' => $event]); ?>
                 <?php endforeach; ?>
+            </div>
         </div>
         <div class="col-lg-8">
             <div id="map"></div>

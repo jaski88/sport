@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+
 use yii\helpers\Html;
 use Yii;
 
@@ -110,13 +111,11 @@ class Event extends \yii\db\ActiveRecord {
         $date = date('Y-m-d H:i');
         return Event::find()->where(['active' => Event::STATUS_ACTIVE, 'public' => Event::STATUS_PUBLIC]); //->andWhere(['>', 'time_start', $date]);
     }
-    
-        static function findByUser( $user_id ) {
+
+    static function findByUser($user_id) {
         $date = date('Y-m-d H:i');
         return Event::find()->where(['user_id' => $user_id]); //->andWhere(['>', 'time_start', $date]);
     }
-    
-    
 
     /**
      * @return \yii\db\ActiveQuery
@@ -125,7 +124,7 @@ class Event extends \yii\db\ActiveRecord {
         return $this->hasOne(Region::className(), ['id' => 'region_id']);
     }
 
-    public function loadDefault() {       
+    public function loadDefault() {
         $this->location = "52.234660180064594;21.00889634393309";
         $this->town = "Marszałkowska 132, 00-008 Warszawa, Poland";
         $this->region_id = 6;
@@ -136,23 +135,79 @@ class Event extends \yii\db\ActiveRecord {
         $this->people_min = 0;
         $this->people_max = 0;
     }
-    
-    public function toClassName()
-    {
-        $class= [ 1 => "panel-primary", 2=> "panel-success", 3=>"panel-info", 4=>"panel-warning", 5 => "panel-danger" ];
+
+    public function toClassName() {
+        $class = [ 1 => "panel-primary", 2 => "panel-success", 3 => "panel-info", 4 => "panel-warning", 5 => "panel-danger"];
         return $class[$this->event_type];
-    
     }
-    
-    public function getUrl()
-    {
+
+    public function getUrl() {
         return Html::a('Wiecej', ['events/view', 'id' => $this->id]);
     }
+
+    public function toMarkerJson() {
+        $content = $this->time_start . ' <br />' . $this->town . '<br />' . $this->getUrl();
+        return sprintf('{id:%s, coords: {lat: %s, lng: %s }, title:\'\', content:\'%s\' }', !empty($this->id) ? $this->id : -1, $this->getLat(), $this->getLng(), $content);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEventUsers() {
+        return $this->hasMany(EventUsers::className(), ['event_id' => 'id']);
+    }
+
+    public function hasMaxUsers() {
+        if( $this->people_max == 0 )
+        {
+            return false;
+        }
+        
+        $total = $this->getEventUsers()->count();
+        if (is_string($total)) {
+            $total = intval($total);
+        }
+
+        return $total >= $this->people_max;
+    }
     
-    public function toMarkerJson( )
+    public function switchActive( )
     {
-        $content = $this->time_start. ' <br />'. $this->town . '<br />'. $this->getUrl();
-        return sprintf('{id:%s, coords: {lat: %s, lng: %s }, title:\'\', content:\'%s\' }', !empty( $this->id ) ? $this->id : -1, $this->getLat(), $this->getLng( ), $content ); 
+        if ( $this->active == self::STATUS_ACTIVE )
+        {
+            $this->active = self::STATUS_INACTIVE;
+        }
+        else
+        {
+            $this->active = self::STATUS_ACTIVE;
+        }
+    }
+    
+    public function isOwner( )
+    {
+        return User::getUserId() == $this->user_id;
+    }
+    
+    public function needMore( )
+    {
+        if ( $this->people_min == 0 )
+        {
+            return 0;
+        }
+        
+        $count = $this->getEventUsers()->count();
+        
+        return ( $this->getEventUsers()->count() < $this->people_min ) ? $this->people_min - $this->getEventUsers()->count() : 0;
+    }
+    
+    public function freeSlots() 
+    {
+        if ( $this->people_max == 0 )
+        {
+            return 0;
+        }
+        
+        return ( $this->getEventUsers()->count() < $this->people_max ) ? $this->people_max - $this->getEventUsers()->count() : 0;
     }
 
 }

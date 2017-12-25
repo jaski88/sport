@@ -9,12 +9,13 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\EventSearch;
 use app\models\User;
+use app\models\EventUsers;
 
 /**
  * EventsController implements the CRUD actions for Event model.
  */
 class EventsController extends Controller {
-
+    
     /**
      * @inheritdoc
      */
@@ -53,6 +54,35 @@ class EventsController extends Controller {
             'dataProvider' => $dataProvider,
         ]);
     }
+    
+    public function actionSignUp( $id )
+    {
+        $event = $this->findModel( $id );
+        if ( $event->hasMaxUsers() )
+        {
+            return $this->redirect(['view', 'id' => $id]);
+//            exit;
+        }
+        
+        $model = new EventUsers( );
+        $model->user_id = User::getUserId();
+        $model->event_id = $id;
+        $model->status = EventUsers::STATUS_ACTIVE;
+        if ( $model->save())
+        {
+            return $this->redirect(['view', 'id' => $id]);
+        }
+        else
+        {
+            echo 'error';exit;
+        }
+    }
+    
+    public function actionSignOut( $id )
+    {
+        EventUsers::findOne(['user_id' => User::getUserId(), 'event_id' => $id])->delete();
+        $this->redirect(['view', 'id' => $id]);
+    }
 
 
     /**
@@ -73,7 +103,7 @@ class EventsController extends Controller {
      */
     public function actionCreate() {
         $model = new Event();
-        $model->user_id = \app\models\User::getUserId();
+        $model->user_id = User::getUserId();
 
         if ($model->load(Yii::$app->request->post())) {
             $result = $model->save();
@@ -117,6 +147,13 @@ class EventsController extends Controller {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+    
+    public function actionActivate($id) {
+        $model = $this->findModel($id);
+        $model->switchActive( );
+        $model->save( );
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
