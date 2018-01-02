@@ -1,5 +1,4 @@
 <?php
-
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model app\models\LoginForm */
@@ -10,40 +9,54 @@ use yii\bootstrap\ActiveForm;
 $this->title = 'Login';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>Please fill out the following fields to login:</p>
+<div class="row">
+    <div class="col-lg-4 col-sm-offset-4  text-center">
 
-    <?php $form = ActiveForm::begin([
-        'id' => 'login-form',
-        'layout' => 'horizontal',
-        'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-3\">{input}</div>\n<div class=\"col-lg-8\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 control-label'],
-        ],
-    ]); ?>
 
-        <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+        <div class="panel panel-default">
+            <div class="panel-heading">Login or <?= Html::a('Register', ['users/register']) ?></div>
+            <div class="panel-body">
 
-        <?= $form->field($model, 'password')->passwordInput() ?>
+                <?php
+                $form = ActiveForm::begin([
+                            'id' => 'login-form',
+                            'layout' => 'horizontal',
+                            'fieldConfig' => [
+                                'template' => "<div class=\"col-lg-12\">{input}</div>\n<div class=\"col-lg-12\">{error}</div>",
+                                'labelOptions' => ['class' => 'col-lg-2 control-label'],
+                            ],
+                ]);
+                ?>
 
-        <?= $form->field($model, 'rememberMe')->checkbox([
-            'template' => "<div class=\"col-lg-offset-1 col-lg-3\">{input} {label}</div>\n<div class=\"col-lg-8\">{error}</div>",
-        ]) ?>
+                <?= $form->field($model, 'username')->textInput(['placeholder' => "Username"]) ?>
 
-        <div class="form-group">
-            <div class="col-lg-offset-1 col-lg-11">
-                <?= Html::submitButton('Login', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
+                <?= $form->field($model, 'password')->passwordInput([ 'placeholder' => "Password"]) ?>
+
+
+                <?= Html::submitButton('Login', ['class' => 'btn btn-success btn-lg', 'name' => 'login-button', 'style' => 'width:100%']) ?>
+
+                <div class="login-or">
+                    <hr class="hr-or">
+                    <span class="span-or">or</span>
+                </div>
+
+                <a class="btn btn-primary btn-lg" href="/sport/web/users/auth?authclient=facebook" style="background-color: #29487d; width:100%;">Login with facebook</a>
+
+
+                <?php // yii\authclient\widgets\AuthChoice::widget(['baseAuthUrl' => ['site/auth']]) ?>
+
+
+                <?php ActiveForm::end(); ?>
+
+            </div> <!-- panel body -->
+
+            <div class="panel-footer text-right"><?= Html::a('Forgot password?', ['users/password-recover']) ?></div>
+
         </div>
-
-    <?php ActiveForm::end(); ?>
-    
-    <a href="?r=site/register">Register</a>
-
-    <div class="col-lg-offset-1" style="color:#999;">
-        You may login with <strong>admin/admin</strong> or <strong>demo/demo</strong>.<br>
-        To modify the username/password, please check out the code <code>app\models\User::$users</code>.
     </div>
 </div>
+
+
+
+

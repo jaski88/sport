@@ -10,15 +10,13 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use app\models\user\PasswordForm;
+use app\models\user\PasswordRecoveryForm;
+use app\models\UserSearch;
+use yii\web\Response;
 
-/**
- * UsersController implements the CRUD actions for User model.
- */
 class UsersController extends Controller {
 
-    /**
-     * @inheritdoc
-     */
     public function behaviors() {
         return [
             'verbs' => [
@@ -67,10 +65,39 @@ class UsersController extends Controller {
         ];
     }
 
-    /**
-     * Lists all User models.
-     * @return mixed
-     */
+    public function actions() {
+        return [
+            'error' => [
+                'class' => 'yii\web\ErrorAction',
+            ],
+            'captcha' => [
+                'class' => 'yii\captcha\CaptchaAction',
+                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+            ],
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'oAuthSuccess'],
+            ],
+        ];
+    }
+
+    public function oAuthSuccess($client) {
+        $userAttr = $client->getUserAttributes();
+        $id = $userAttr['id'];
+
+        if (User::login_by_fb($id)) {
+            $this->goHome();
+        } else {
+            Yii::$app->session->set('id', $id);
+            Yii::$app->session->set('name', $userAttr['name']);
+            Yii::$app->session->set('email', $userAttr['email']);
+            Yii::$app->session->set('name', $userAttr['first_name']);
+            Yii::$app->session->set('surname', $userAttr['last_name']);
+
+            return $this->redirect(['fb-register']);
+        }
+    }
+
     public function actionIndex() {
         $dataProvider = new ActiveDataProvider([
             'query' => User::find(),
@@ -81,22 +108,22 @@ class UsersController extends Controller {
         ]);
     }
 
-    /**
-     * Displays a single User model.
-     * @param integer $id
-     * @return mixed
-     */
+    public function actionSearch() {
+        $searchModel = new UserSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('search', [
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
+        ]);
+    }
+
     public function actionView($id) {
         return $this->render('view', [
                     'model' => $this->findModel($id),
         ]);
     }
 
-    /**
-     * Creates a new User model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
     public function actionCreate() {
         $model = new User();
 
@@ -109,12 +136,6 @@ class UsersController extends Controller {
         }
     }
 
-    /**
-     * Updates an existing User model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
@@ -127,25 +148,146 @@ class UsersController extends Controller {
         }
     }
 
-    /**
-     * Deletes an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
+    public function actionMyAccount() {
+        return $this->render('my-account', [
+                    'model' => $this->findModel(User::getUserId()),
+        ]);
+    }
+
+    public function actionPassword() {
+
+        if (Yii::$app->user->identity->isFbUser()) {
+            return $this->redirect(['my-account']);
+        }
+
+        $model = new PasswordForm( );
+        if ($model->load(Yii::$app->request->post()) && $model->updatePassword()) {
+            return $this->redirect(['my-account']);
+        }
+        return $this->render('password', [
+                    'model' => $model,
+        ]);
+    }
+
     public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return User the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
+    public function actionLocation() {
+        $model = $this->findModel(User::getUserId());
+
+        if ($model->load(Yii::$app->request->post()) && $model->save(true, array('coords', 'address', 'region_id'))) {
+            return $this->redirect(['site/my-account']);
+        } else {
+            return $this->render('location', [
+                        'model' => $model,
+            ]);
+        }
+    }
+
+    public function actionFbRegister() {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $id = Yii::$app->session->get('id');
+
+        if ($id === null) {
+            return $this->redirect(['users/auth?authclient=facebook']);
+        }
+
+        $model = new User();
+        $model->setScenario('facebook');
+
+        $email = Yii::$app->session->get('email');
+        $username = explode('@', $email)[0];
+
+        $model->fb_id = $id;
+        $model->name = Yii::$app->session->get('name');
+        $model->surname = Yii::$app->session->get('surname');
+        $model->username = $username;
+        $model->email = $email;
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate()) {
+
+                if ($model->save() && User::login_by_fb($model->fb_id)) {
+                    return $this->redirect(['users/my-account']);
+                }
+            }
+        }
+
+        return $this->render('register_fb', [
+                    'model' => $model,
+        ]);
+    }
+
+    public function actionRegister() {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
+        $model = new User();
+        $model->setScenario('register');
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate()) {
+
+                $model->password = User::hashPassword($model->password);
+                $model->role = User::ROLE_USER;
+
+                if ($model->save() && $model->login()) {
+                    return $this->redirect(['site/my-account']);
+                } else {
+                    $model->password = "";
+                }
+            }
+        }
+
+        return $this->render('register', [
+                    'model' => $model,
+        ]);
+    }
+
+    public function actionPasswordRecover() {
+        $model = new PasswordRecoveryForm();
+
+        if ($model->load(Yii::$app->request->post()) && $model->send()) {
+            Yii::$app->session->setFlash('formSubmitted');
+        }
+
+        return $this->render('password_recover', [
+                    'model' => $model,
+        ]);
+    }
+
+    public function actionTokenLogin($token) {
+
+        $user = User::findOne(['token' => $token]);
+
+        $success = false;
+
+        if ($user) {
+            $user->token = '';
+            $pass = User::generatePassword();
+            $user->password = User::hashPassword($pass);
+            $user->save(false);
+
+            Yii::$app->mailer->compose()
+                    ->setTo($user->email)
+                    ->setFrom([Yii::$app->params['no_reply_email'] => 'TeamMates'])
+                    ->setSubject('Zmiana hasła')
+                    ->setTextBody('Nowe hasło to: ' . $pass)
+                    ->send();
+
+            $success = true;
+        }
+
+        return $this->render('token_login',['success' => $success]);
+    }
+
     protected function findModel($id) {
         if (($model = User::findOne($id)) !== null) {
             return $model;

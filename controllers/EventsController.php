@@ -11,14 +11,8 @@ use app\models\EventSearch;
 use app\models\User;
 use app\models\EventUsers;
 
-/**
- * EventsController implements the CRUD actions for Event model.
- */
 class EventsController extends Controller {
     
-    /**
-     * @inheritdoc
-     */
     public function behaviors() {
         return [
             'verbs' => [
@@ -30,10 +24,6 @@ class EventsController extends Controller {
         ];
     }
 
-    /**
-     * Lists all Event models.
-     * @return mixed
-     */
     public function actionIndex() {
         $searchModel = new EventSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -43,11 +33,15 @@ class EventsController extends Controller {
                     'searchModel' => $searchModel,
         ]);
     }
-    
-    public function actionUser()
+        
+    public function actionUser( $id = null )
     {
+        if ( $id == null )
+        {
+            $id = User::getUserId();
+        }
         $searchModel = new EventSearch();
-        $dataProvider = $searchModel->search_by_user(Yii::$app->request->queryParams, User::getUserId());
+        $dataProvider = $searchModel->search_by_user(Yii::$app->request->queryParams, $id);
                 
         return $this->render('user', [
             'searchModel' => $searchModel,
@@ -61,7 +55,6 @@ class EventsController extends Controller {
         if ( $event->hasMaxUsers() )
         {
             return $this->redirect(['view', 'id' => $id]);
-//            exit;
         }
         
         $model = new EventUsers( );
@@ -84,23 +77,12 @@ class EventsController extends Controller {
         $this->redirect(['view', 'id' => $id]);
     }
 
-
-    /**
-     * Displays a single Event model.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionView($id) {
         return $this->render('view', [
                     'model' => $this->findModel($id),
         ]);
     }
 
-    /**
-     * Creates a new Event model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
     public function actionCreate() {
         $model = new Event();
         $model->user_id = User::getUserId();
@@ -119,12 +101,6 @@ class EventsController extends Controller {
         ]);
     }
 
-    /**
-     * Updates an existing Event model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
@@ -137,14 +113,10 @@ class EventsController extends Controller {
         }
     }
 
-    /**
-     * Deletes an existing Event model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
     public function actionDelete($id) {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        $model->status = Event::STATUS_DELETED;
+        $model->save( );
 
         return $this->redirect(['index']);
     }
@@ -156,13 +128,6 @@ class EventsController extends Controller {
         return $this->redirect(['view', 'id' => $model->id]);
     }
 
-    /**
-     * Finds the Event model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Event the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($id) {
         if (($model = Event::findOne($id)) !== null) {
             return $model;

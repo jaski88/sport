@@ -37,7 +37,7 @@ class EventUsers extends \yii\db\ActiveRecord {
             [['event_id', 'user_id', 'status'], 'integer'],
             [['event_id', 'user_id'], 'unique', 'targetAttribute' => ['event_id', 'user_id'], 'message' => 'The combination of Event ID and User ID has already been taken.'],
             [['event_id'], 'exist', 'skipOnError' => true, 'targetClass' => Event::className(), 'targetAttribute' => ['event_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -63,7 +63,7 @@ class EventUsers extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getUser() {
-        return $this->hasOne(Users::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
 }

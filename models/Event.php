@@ -5,26 +5,6 @@ namespace app\models;
 use yii\helpers\Html;
 use Yii;
 
-/**
- * This is the model class for table "event".
- *
- * @property integer $id
- * @property integer $user_id
- * @property integer $public
- * @property string $time_start
- * @property string $time_end
- * @property integer $cyclic
- * @property integer $active
- * @property string $description
- * @property string $location
- * @property integer $event_type
- * @property integer $people_min
- * @property integer $people_max
- * @property string $town
- *
- * @property Users $user
- * @property EventType $eventType
- */
 class Event extends \yii\db\ActiveRecord {
 
     /**
@@ -36,7 +16,10 @@ class Event extends \yii\db\ActiveRecord {
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
+    const STATUS_DELETED = 2;
+    
     const STATUS_PUBLIC = 1;
+
 
     /**
      * @inheritdoc
@@ -48,7 +31,7 @@ class Event extends \yii\db\ActiveRecord {
             [['time_start', 'time_end'], 'safe'],
             [['description', 'location'], 'string'],
             [['town'], 'string', 'max' => 100],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['event_type'], 'exist', 'skipOnError' => true, 'targetClass' => EventType::className(), 'targetAttribute' => ['event_type' => 'id']],
             [['time_start'], 'checkDate'],
         ];
@@ -89,7 +72,7 @@ class Event extends \yii\db\ActiveRecord {
      * @return \yii\db\ActiveQuery
      */
     public function getUser() {
-        return $this->hasOne(Users::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 
     /**
@@ -126,7 +109,7 @@ class Event extends \yii\db\ActiveRecord {
 
     public function loadDefault() {
         $this->location = "52.234660180064594;21.00889634393309";
-        $this->town = "Marszałkowska 132, 00-008 Warszawa, Poland";
+        $this->town = "Marszałkowska 132, 00-008 Warszawa";
         $this->region_id = 6;
         $this->time_start = date('Y-m-d H:i');
         $this->public = 1;

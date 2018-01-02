@@ -49,34 +49,29 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => 'Home', 'url' => ['/site/index']],
+                    ['label' => 'Dołącz', 'url' => ['/events/index']],
                     ['label' => 'About', 'url' => ['/site/about']],
                     ['label' => 'Contact', 'url' => ['/site/contact']],
-                    Yii::$app->user->isGuest ? (
-                            ['label' => 'Login', 'url' => ['/site/login']]
-                            ) : (
-                            '<li>'
-                            . Html::beginForm(['/site/logout'], 'post')
-                            . Html::submitButton(
-                                    'Logout (' . Yii::$app->user->identity->username . ')', ['class' => 'btn btn-link logout']
-                            )
-                            . Html::endForm()
-                            . '</li>'
-                            ),
-                    Yii::$app->user->isGuest ? (
-                            ['label' => 'Register', 'url' => ['/site/register']]
-                            ) : ( ['label' => 'My account', 'url' => ['/site/my-account']] ),
+                    ['label' => 'Search', 'url' => ['/users/search']],
+                    Yii::$app->user->isGuest ? ( ['label' => 'Login', 'url' => ['/site/login']] ) // : ([]),
+                            : (
+                            ['label' => Yii::$app->user->identity->username, 'items' => [
+                                    ['label' => 'My account', 'url' => ['/users/my-account']],
+                                    ['label' => 'My events', 'url' => ['events/user']],
+                                    ['label' => 'Logout', 'url' => ['/site/logout']],
+                                ],
+                            ] )
                 ],
             ]);
             NavBar::end();
             ?>
 
             <div class="container">
-            <?=
-            Breadcrumbs::widget([
-                'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ])
-            ?>
+                <?=
+                Breadcrumbs::widget([
+                    'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                ])
+                ?>
                 <?= Alert::widget() ?>
                 <?= $content ?>
             </div>
@@ -91,25 +86,6 @@ AppAsset::register($this);
         </footer>
 
         <?php $this->endBody() ?>
-
-        <script>
-            
-            function setMapCenter(position) {
-    //alert("setMapCenter");
-//    var center = {lat: position.coords.latitude, lng: position.coords.longitude};
-    console.log("map center:" + position.coords.latitude + ", " + position.coords.longitude);
-//    map.panTo(center);
-//    map.setZoomLevel(10);
-}
-
-function error(err) {
-  console.warn('ERROR ' + err.code + " " + err.message);
-};
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(setMapCenter, error, {timeout: 5000, enableHighAccuracy: true});
-            }
-        </script>
 
         <script src="/sport/web/scripts.js"></script>
         <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARPEUMKytC0BP1VEQjtxGgn7UdIT5CykM&callback=initMap"></script>
