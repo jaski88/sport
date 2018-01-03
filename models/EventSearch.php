@@ -19,7 +19,7 @@ class EventSearch extends Event
     {
         return [
             [['id', 'user_id', 'public', 'duration', 'cyclic', 'active', 'people_min', 'people_max', 'region_id'], 'integer'],
-            [['time_start', 'time_end', 'description', 'location', 'town'], 'safe'],
+            [['time_start', 'day_start', 'description', 'location', 'town'], 'safe'],
         ];
     }
 
@@ -78,7 +78,7 @@ class EventSearch extends Event
             'public' => $this->public,
             'time_start' => $this->time_start,
             'duration' => $this->duration,
-            'time_end' => $this->time_end,
+            'day_start' => $this->day_start,
             'cyclic' => $this->cyclic,
             'active' => $this->active,
             'event_type' => $this->event_type,
@@ -131,7 +131,7 @@ class EventSearch extends Event
             'public' => $this->public,
             'time_start' => $this->time_start,
             'duration' => $this->duration,
-            'time_end' => $this->time_end,
+            'day_start' => $this->day_start,
             'cyclic' => $this->cyclic,
             'active' => $this->active,
             'event_type' => $this->event_type,

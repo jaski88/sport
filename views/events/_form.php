@@ -19,13 +19,16 @@ $regions = ArrayHelper::map(\app\models\Region::find()->all(), 'id', 'name');
 <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-3">
+            <?= $form->field($model, 'day_start')->textInput() ?>
+        </div>
+        <div class="col-lg-3">
             <?= $form->field($model, 'time_start')->textInput() ?>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <?= $form->field($model, 'duration')->textInput() ?>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <?= $form->field($model, 'event_type')->dropDownList($types) ?>
         </div>
     </div>

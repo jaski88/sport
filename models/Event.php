@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\helpers\Html;
 use Yii;
+use app\models\users\User;
 
 class Event extends \yii\db\ActiveRecord {
 
@@ -26,14 +27,15 @@ class Event extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['user_id', 'public', 'time_start', 'duration', 'active', 'description', 'location', 'event_type', 'people_min', 'people_max', 'region_id'], 'required'],
+            [['user_id', 'public', 'time_start', 'day_start', 'duration', 'active', 'description', 'location', 'event_type', 'people_min', 'people_max', 'region_id'], 'required'],
             [['user_id', 'public', 'cyclic', 'active', 'event_type', 'people_min', 'people_max'], 'integer'],
-            [['time_start', 'time_end'], 'safe'],
+            [['time_start', 'day_start'], 'safe'],
             [['description', 'location'], 'string'],
             [['town'], 'string', 'max' => 100],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
             [['event_type'], 'exist', 'skipOnError' => true, 'targetClass' => EventType::className(), 'targetAttribute' => ['event_type' => 'id']],
-            [['time_start'], 'checkDate'],
+            [['time_start'], 'date', 'format' => 'H:m'],
+            [['day_start'], 'date', 'format' => 'yyyy-M-d'],
         ];
     }
 
@@ -45,8 +47,8 @@ class Event extends \yii\db\ActiveRecord {
             'id' => 'ID',
             'user_id' => 'User ID',
             'public' => 'Public',
-            'time_start' => 'Rozpoczęcie',
-            'time_end' => 'Time End',
+            'time_start' => 'Godzina',
+            'day_start' => 'Rozpoczęcie',
             'cyclic' => 'Cyclic',
             'active' => 'Active',
             'description' => 'Description',
@@ -111,7 +113,8 @@ class Event extends \yii\db\ActiveRecord {
         $this->location = "52.234660180064594;21.00889634393309";
         $this->town = "Marszałkowska 132, 00-008 Warszawa";
         $this->region_id = 6;
-        $this->time_start = date('Y-m-d H:i');
+        $this->day_start = date('Y-m-d');
+        $this->time_start = date('H:i');
         $this->public = 1;
         $this->duration = 1;
         $this->active = 1;
