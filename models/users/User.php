@@ -2,6 +2,8 @@
 
 namespace app\models\users;
 
+use app\models\EventUsers;
+
 use Yii;
 
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
@@ -31,7 +33,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
         return Yii::$app->user->login(self::findByUsernameOrEmail($this->username), 3600 * 24 * 30);
     }
 
-    public static function findByToken($token) {
+    public static function findIdentityByAccessToken($token, $userType = null) {
         return static::findOne(['token' => $token]);
     }
 

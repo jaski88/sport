@@ -2,8 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\DetailView;
-use app\models\User;
+use app\models\users\User;
 use app\widgets\Panel;
 
 /* @var $this yii\web\View */
