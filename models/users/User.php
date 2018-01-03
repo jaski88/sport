@@ -3,6 +3,7 @@
 namespace app\models\users;
 
 use app\models\EventUsers;
+use app\models\Event;
 
 use Yii;
 

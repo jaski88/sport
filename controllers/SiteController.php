@@ -7,7 +7,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use app\models\LoginForm;
 use app\models\ContactForm;
-use app\models\User;
+use app\models\users\User;
 
 class SiteController extends Controller {
 
