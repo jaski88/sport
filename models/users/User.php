@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models;
+namespace app\models\users;
 
 use Yii;
 
@@ -11,18 +11,11 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
     const ROLE_MODERATOR = 2;
 
     public $authKey;
-    public $password_confirm;
 
-    /**
-     * @inheritdoc
-     */
     public static function tableName() {
         return 'users';
     }
 
-    /**
-     * @inheritdoc
-     */
     public function rules() {
         return [
             [['username', 'email'], 'required'],
@@ -30,30 +23,19 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
             [['username', 'email'], 'unique'],
             [['coords', 'address', 'fb_id', 'name', 'surname'], 'string', 'max' => 200],
             [['password', 'username', 'token'], 'string', 'max' => 50],
-            [['password'], 'required', 'on' => ['register']],
-            [['password'], 'required', 'on' => ['password']],
             [['fb_id', 'username', 'email'], 'required', 'on' => ['facebook']],
         ];
     }
 
     public function login() {
-        if ($this->validate()) {
-            return Yii::$app->user->login(self::findByUsername($this->username), 3600 * 24 * 30);
-        }
-        return false;
+        return Yii::$app->user->login(self::findByUsernameOrEmail($this->username), 3600 * 24 * 30);
     }
 
     public static function findByToken($token) {
         return static::findOne(['token' => $token]);
-
-//        if ($user !== null) {
-//            return Yii::$app->user->login($user, 3600 * 24 * 30);
-//        }
-//
-//        return false;
     }
 
-    static public function login_by_fb($id) {
+    static public function loginByFb($id) {
 
         $user = static::findOne(['fb_id' => $id]);
         if ($user !== null) {
@@ -94,20 +76,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
         return static::findOne(['id' => $id]);
     }
 
-    public static function findIdentityByAccessToken($token, $userType = null) {
-        return static::findOne(['token' => $token]);
-    }
-
-    public static function findByUsername($username) {
-        return static::findOne(['username' => $username]);
-    }
-
     public static function findByUsernameOrEmail($username) {
         return static::find()->where(['username' => $username])->orWhere(['email' => $username])->one();
-    }
-
-    public static function findByEmail($email) {
-        return static::findOne(['email' => $email]);
     }
 
     public function getId() {
@@ -124,15 +94,6 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 
     public function validatePassword($password) {
         return $this->password === self::hashPassword($password);
-    }
-
-    public function confirmPassword($attribute, $params) {
-        if (!$this->hasErrors()) {
-
-            if ($this->password != $this->password_confirm) {
-                $this->addError($attribute, 'Passwords must be the same');
-            }
-        }
     }
 
     public function toMarkerJson() {

@@ -8,7 +8,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\EventSearch;
-use app\models\User;
+use app\models\users\User;
 use app\models\EventUsers;
 
 class EventsController extends Controller {

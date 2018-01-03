@@ -3,17 +3,17 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\User;
 use yii\data\ActiveDataProvider;
 use app\components\AccessRule;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\models\user\PasswordForm;
-use app\models\user\PasswordRecoveryForm;
-use app\models\UserSearch;
-use yii\web\Response;
+use app\models\users\PasswordForm;
+use app\models\users\PasswordRecoveryForm;
+use app\models\users\UserSearch;
+use app\models\users\RegisterForm;
+use app\models\users\User;
 
 class UsersController extends Controller {
 
@@ -85,7 +85,7 @@ class UsersController extends Controller {
         $userAttr = $client->getUserAttributes();
         $id = $userAttr['id'];
 
-        if (User::login_by_fb($id)) {
+        if (User::loginByFb($id)) {
             $this->goHome();
         } else {
             Yii::$app->session->set('id', $id);
@@ -149,6 +149,10 @@ class UsersController extends Controller {
     }
 
     public function actionMyAccount() {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
         return $this->render('my-account', [
                     'model' => $this->findModel(User::getUserId()),
         ]);
@@ -213,7 +217,7 @@ class UsersController extends Controller {
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
 
-                if ($model->save() && User::login_by_fb($model->fb_id)) {
+                if ($model->save() && User::loginByFb($model->fb_id)) {
                     return $this->redirect(['users/my-account']);
                 }
             }
@@ -229,8 +233,7 @@ class UsersController extends Controller {
             return $this->goHome();
         }
 
-        $model = new User();
-        $model->setScenario('register');
+        $model = new RegisterForm();
 
         if ($model->load(Yii::$app->request->post())) {
             if ($model->validate()) {
@@ -238,10 +241,8 @@ class UsersController extends Controller {
                 $model->password = User::hashPassword($model->password);
                 $model->role = User::ROLE_USER;
 
-                if ($model->save() && $model->login()) {
-                    return $this->redirect(['site/my-account']);
-                } else {
-                    $model->password = "";
+                if ($model->save(false) && $model->login()) {
+                    return $this->redirect(['users/my-account']);
                 }
             }
         }
@@ -285,7 +286,7 @@ class UsersController extends Controller {
             $success = true;
         }
 
-        return $this->render('token_login',['success' => $success]);
+        return $this->render('token_login', ['success' => $success]);
     }
 
     protected function findModel($id) {

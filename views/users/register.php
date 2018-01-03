@@ -35,6 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= $form->field($model, 'username')->textInput(['placeholder' => 'Username']) ?>
                 <?= $form->field($model, 'email')->textInput(['placeholder' => 'Email']) ?>
                 <?= $form->field($model, 'password')->passwordInput(['placeholder' => 'Password']) ?>
+                <?= $form->field($model, 'password_confirm')->passwordInput(['placeholder' => 'Confirm password']) ?>
                 <?= Html::submitButton('Register', ['class' => 'btn btn-success btn-lg', 'name' => 'register-button', 'style' => 'width:100%']) ?>
 
                 <div class="login-or">

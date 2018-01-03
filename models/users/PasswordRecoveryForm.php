@@ -1,10 +1,9 @@
 <?php
 
-namespace app\models\user;
+namespace app\models\users;
 
 use Yii;
 use yii\base\Model;
-use app\models\User;
 
 class PasswordRecoveryForm extends Model {
 

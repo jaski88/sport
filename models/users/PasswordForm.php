@@ -1,10 +1,8 @@
 <?php
 
-namespace app\models\user;
+namespace app\models\users;
 
 use Yii;
-use yii\base\Model;
-use app\models\User;
 
 class PasswordForm extends User {
 
@@ -19,6 +17,7 @@ class PasswordForm extends User {
             [['password_old', 'password', 'password_confirm'], 'required'],
             ['password_confirm', 'confirmPassword'],
             ['password_old', 'validateOldPassword'],
+            [['password'], 'string','min' => 5],
         ];
     }
 
