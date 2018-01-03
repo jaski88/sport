@@ -23,10 +23,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?= Panel::begin(['title' => 'Actions']); ?>
 
-<!--            <p>
-                <?php // Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            </p>-->
-
             <?php if( !$model->isFbUser() ) : ?>
             <p>
                 <?= Html::a('Change password', ['users/password'], ['class' => 'btn btn-primary']) ?>

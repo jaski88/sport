@@ -34,19 +34,39 @@ class EventsController extends Controller {
         ]);
     }
         
-    public function actionUser( $id = null )
+    public function actionUser( $id )
     {
-        if ( $id == null )
-        {
-            $id = User::getUserId();
-        }
+        
+        $user = User::findIdentity($id);
+        
         $searchModel = new EventSearch();
-        $dataProvider = $searchModel->search_by_user(Yii::$app->request->queryParams, $id);
+        $dataProvider = $searchModel->searchByUser(Yii::$app->request->queryParams, $id);
                 
         return $this->render('user', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'user' => $user,
         ]);
+    }
+    
+    public function actionMy( )
+    {
+        $id = User::getUserId();
+        $user = User::findIdentity($id);
+        
+        $searchModel = new EventSearch();
+        $dataProvider = $searchModel->searchByUser(Yii::$app->request->queryParams, $id);
+        
+        $userEvents = $user->events;
+                
+        return $this->render('my', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'user' => $user,
+            'userEvents' => $userEvents,
+        ]);
+        
+        
     }
     
     public function actionSignUp( $id )

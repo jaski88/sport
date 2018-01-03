@@ -119,9 +119,13 @@ class UsersController extends Controller {
     }
 
     public function actionView($id) {
+                
+        $model = $this->findModel($id);
+                
         return $this->render('view', [
-                    'model' => $this->findModel($id),
+            'model' => $model,
         ]);
+        
     }
 
     public function actionCreate() {
@@ -149,12 +153,14 @@ class UsersController extends Controller {
     }
 
     public function actionMyAccount() {
-        if (!Yii::$app->user->isGuest) {
+        if (Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-
+        
+        $id = User::getUserId();
+        
         return $this->render('my-account', [
-                    'model' => $this->findModel(User::getUserId()),
+                    'model' => $this->findModel($id),
         ]);
     }
 

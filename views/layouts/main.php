@@ -57,7 +57,7 @@ AppAsset::register($this);
                             : (
                             ['label' => Yii::$app->user->identity->username, 'items' => [
                                     ['label' => 'My account', 'url' => ['/users/my-account']],
-                                    ['label' => 'My events', 'url' => ['events/user']],
+                                    ['label' => 'My events', 'url' => ['/events/my' ]],
                                     ['label' => 'Logout', 'url' => ['/site/logout']],
                                 ],
                             ] )

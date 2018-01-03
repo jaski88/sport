@@ -8,16 +8,15 @@ use app\widgets\Panel;
 /* @var $searchModel app\models\EventSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Wydarzenia użytkownika '.$user->username;
+$this->title = 'My';
+$this->params['breadcrumbs'][] = ['label' => 'Events', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="event-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    
-    <?= Panel::begin() ;?>
-    <?php echo $this->render('_search_user', ['model' => $searchModel,'id' => $user->id]); ?>
-    <?= Panel::end() ;?>
+    <?= Panel::begin(); ?>
+    <?php echo $this->render('_search_user', ['model' => $searchModel, 'id' => $user->id]); ?>
+    <?= Panel::end(); ?>
 
 
     <?=
@@ -33,9 +32,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'people_min',
             'people_max',
             'town',
-            'region.name',  
-//            ['class' => 'yii\grid\ActionColumn'],
+            'region.name',
+            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]);
     ?>
+
+    <table class="table table-bordered" >
+        <?php foreach ($userEvents as $event): ?>
+            <tr><td><?= $event->id; ?></td><td><?= $event->day_start . ' ' . $event->time_start; ?></td><td><?= $event->town; ?></td><td><?= $event->eventType->name; ?></td></tr>
+        <?php endforeach; ?>
+    </table>
+
 </div>
